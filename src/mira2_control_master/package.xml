@@ -18,6 +18,8 @@
   <exec_depend>custom_msgs</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-pymavlink</exec_depend>
+  <exec_depend>mavros</exec_depend>
+  <exec_depend>mavros_extras</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
