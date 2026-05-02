@@ -272,8 +272,8 @@ def main():
     print(f"{'='*50}\n")
     
     # HSV thresholds for yellow (TUNE THESE!)
-    hsv_lower = np.array([100, 50, 20])  # [H, S, V]
-    hsv_upper = np.array([135, 255, 150])
+    hsv_lower = np.array([20, 100, 100])  # [H, S, V]
+    hsv_upper = np.array([35, 255, 255])
     
     # Initialize ArUco detector
     aruco_detector = ArUcoDetector()
@@ -364,10 +364,12 @@ def main():
             cv2.imshow('Pipeline Detection', vis_frame)
             cv2.imshow('Mask View', mask)
             
-            # Empty window for tuner (just shows trackbars)
-            tuner_display = np.zeros((50, 400, 3), dtype=np.uint8)
-            cv2.putText(tuner_display, "Adjust HSV values above", 
-                       (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            # Empty window for tuner (just shows trackbars with text)
+            tuner_display = np.zeros((300, 400, 3), dtype=np.uint8)
+            labels = ["H Min", "H Max", "S Min", "S Max", "V Min", "V Max"]
+            for i, label in enumerate(labels):
+                cv2.putText(tuner_display, label, (10, 30 + i * 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
             cv2.imshow('HSV Tuner', tuner_display)
         
         # Handle keyboard
