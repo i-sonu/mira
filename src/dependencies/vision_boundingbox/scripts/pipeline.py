@@ -297,9 +297,9 @@ def main():
     print(f"{'=' * 50}\n")
 
     # HSV thresholds for yellow (TUNE THESE!)
-    hsv_lower = np.array([100, 50, 20])  # [H, S, V]
-    hsv_upper = np.array([135, 255, 150])
-
+    hsv_lower = np.array([20, 100, 100])  # [H, S, V]
+    hsv_upper = np.array([35, 255, 255])
+    
     # Initialize ArUco detector
     aruco_detector = ArUcoDetector()
 
@@ -418,34 +418,82 @@ def main():
         if frame_count > 0:
             detection_rate = (detection_count / frame_count) * 100
             marker_list = aruco_detector.get_marker_list()
-
-            print(f"\n{'=' * 50}")
-            print(f"MISSION RESULTS:")
-            print(f"{'=' * 50}")
-            print(f"Pipeline Detection:")
-            print(f"  Frames processed: {frame_count}")
-            print(f"  Pipeline detections: {detection_count}")
-            print(f"  Detection rate: {detection_rate:.1f}%")
-            print(f"\nArUco Markers:")
-            print(f"  Detected Markers (in order): {marker_list}")
-            print(f"  Total unique markers: {len(marker_list)}")
-            print(f"\nFinal HSV values:")
-            print(f"  Lower: [{hsv_lower[0]}, {hsv_lower[1]}, {hsv_lower[2]}]")
-            print(f"  Upper: [{hsv_upper[0]}, {hsv_upper[1]}, {hsv_upper[2]}]")
-            print(f"{'=' * 50}\n")
-
-            # Save results to file
-            if marker_list:
-                result_string = ','.join(map(str, marker_list))
-                with open('marker_results.txt', 'w') as f:
-                    f.write(result_string)
-                print(f"✓ Results saved to: marker_results.txt")
-                print(f"  Marker sequence: {result_string}\n")
-
-        cap.release()
-        cv2.destroyAllWindows()
-        ros_node.destroy_node()
-        rclpy.shutdown()
+            marker_text = f"Detected Markers: {marker_list}" if marker_list else "Detected Markers: None"
+            
+            # Draw marker list background
+            cv2.rectangle(vis_frame, (5, height - 60), (width - 5, height - 10), (0, 0, 0), -1)
+            cv2.rectangle(vis_frame, (5, height - 60), (width - 5, height - 10), (255, 255, 255), 2)
+            
+            cv2.putText(vis_frame, marker_text, 
+                       (10, height - 30), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+            
+            # Add frame counter
+            cv2.putText(vis_frame, f"Frame: {frame_count}/{total_frames}", 
+                       (width - 250, height - 70), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            
+            if paused:
+                cv2.putText(vis_frame, "PAUSED", 
+                           (width - 150, height - 90), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+            
+            # Show windows
+            cv2.imshow('Pipeline Detection', vis_frame)
+            cv2.imshow('Mask View', mask)
+            
+            # Empty window for tuner (just shows trackbars with text)
+            tuner_display = np.zeros((300, 400, 3), dtype=np.uint8)
+            labels = ["H Min", "H Max", "S Min", "S Max", "V Min", "V Max"]
+            for i, label in enumerate(labels):
+                cv2.putText(tuner_display, label, (10, 30 + i * 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            cv2.imshow('HSV Tuner', tuner_display)
+        
+        # Handle keyboard
+        key = cv2.waitKey(1 if not paused else 0) & 0xFF
+        
+        if key == ord('q'):
+            break
+        elif key == ord('p'):
+            paused = not paused
+            print(f"{'Paused' if paused else 'Resumed'}")
+        elif key == ord(' ') and paused:
+            # Step one frame forward
+            ret, frame = cap.read()
+            if ret:
+                frame_count += 1
+    
+    # Print final statistics
+    if frame_count > 0:
+        detection_rate = (detection_count / frame_count) * 100
+        marker_list = aruco_detector.get_marker_list()
+        
+        print(f"\n{'='*50}")
+        print(f"MISSION RESULTS:")
+        print(f"{'='*50}")
+        print(f"Pipeline Detection:")
+        print(f"  Frames processed: {frame_count}")
+        print(f"  Pipeline detections: {detection_count}")
+        print(f"  Detection rate: {detection_rate:.1f}%")
+        print(f"\nArUco Markers:")
+        print(f"  Detected Markers (in order): {marker_list}")
+        print(f"  Total unique markers: {len(marker_list)}")
+        print(f"\nFinal HSV values:")
+        print(f"  Lower: [{hsv_lower[0]}, {hsv_lower[1]}, {hsv_lower[2]}]")
+        print(f"  Upper: [{hsv_upper[0]}, {hsv_upper[1]}, {hsv_upper[2]}]")
+        print(f"{'='*50}\n")
+        
+        # Save results to file
+        if marker_list:
+            result_string = ','.join(map(str, marker_list))
+            with open('marker_results.txt', 'w') as f:
+                f.write(result_string)
+            print(f"✓ Results saved to: marker_results.txt")
+            print(f"  Marker sequence: {result_string}\n")
+    
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
