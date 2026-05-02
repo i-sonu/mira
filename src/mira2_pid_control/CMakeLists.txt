@@ -67,7 +67,6 @@ install(DIRECTORY config/
 install(PROGRAMS
 	scripts/key_pub.py
 	scripts/pid_tuner_gui.py
-	scripts/rtsp_viewer_gui.py
 	DESTINATION
 	lib/${PROJECT_NAME}
 )
