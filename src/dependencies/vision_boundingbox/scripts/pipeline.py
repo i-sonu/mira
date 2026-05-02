@@ -272,8 +272,8 @@ def main():
     print(f"{'='*50}\n")
     
     # HSV thresholds for yellow (TUNE THESE!)
-    hsv_lower = np.array([100, 50, 20])  # [H, S, V]
-    hsv_upper = np.array([135, 255, 150])
+    hsv_lower = np.array([20, 100, 100])  # [H, S, V]
+    hsv_upper = np.array([35, 255, 255])
     
     # Initialize ArUco detector
     aruco_detector = ArUcoDetector()
