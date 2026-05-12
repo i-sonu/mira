@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'alt_master = mira2_control_master.alt_master:main',
+            'alt_master_normalized = mira2_control_master.alt_master_normalized:main',
             'master = mira2_control_master.master:main',
             'guided_master = mira2_control_master.guided_master:main',
 			'docking_controller_node = mira2_control_master.dock_controller:main',
