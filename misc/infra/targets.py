@@ -287,6 +287,12 @@ def target_alt_master(pixhawk_port: str = "/dev/Pixhawk"):
 	check_ros()
 	run(f"{WS_SOURCE} && ros2 launch mira2_control_master alt_master.launch pixhawk_address:={pixhawk_port}")
 
+@task("Launch normalized (-1 to 1) master control")
+def target_alt_master_normalized(pixhawk_port: str = "/dev/Pixhawk"):
+	"""Launch normalized master control."""
+	check_ros()
+	run(f"{WS_SOURCE} && ros2 launch mira2_control_master alt_master_normalized.launch pixhawk_address:={pixhawk_port}")
+
 @task("Launch teleoperation")
 def target_teleop():
 	"""Launch teleoperation."""

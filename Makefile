@@ -1,4 +1,4 @@
-.PHONY: master alt_master position_zed guided_master build source install-deps submodules update install-udev bs fix-vscode dashboard telemetry-viz
+.PHONY: master alt_master alt_master_normalized position_zed guided_master build source install-deps submodules update install-udev bs fix-vscode dashboard telemetry-viz
 
 export FORCE_COLOR=1
 export RCUTILS_COLORIZED_OUTPUT=1
@@ -108,6 +108,9 @@ camera_frontcam:
 PIXHAWK_PORT ?= /dev/Pixhawk
 alt_master:
 	@python3 mira.py alt-master $(PIXHAWK_PORT)
+
+alt_master_normalized:
+	@python3 mira.py alt-master-normalized $(PIXHAWK_PORT)
 
 position_zed: check-ros
 	${WS} && \

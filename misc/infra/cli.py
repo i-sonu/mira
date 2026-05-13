@@ -99,6 +99,13 @@ def _build_autocomplete_parser() -> argparse.ArgumentParser:
 		import argcomplete.completers as _ac
 		a.completer = _ac.FilesCompleter(directories=False)
 
+	# alt-master-normalized — complete with /dev/ device paths
+	sp = sub.add_parser("alt-master-normalized")
+	a = sp.add_argument("port", nargs="?", default="/dev/Pixhawk")
+	if HAS_ARGCOMPLETE:
+		import argcomplete.completers as _ac
+		a.completer = _ac.FilesCompleter(directories=False)
+
 	# proxy-pixhawk, view-rtsp-stream, install-mavproxy — free-form args
 	sub.add_parser("proxy-pixhawk").add_argument("laptop_ip", nargs="?")
 	sub.add_parser("view-rtsp-stream").add_argument("rtsp_url", nargs="?")
@@ -107,7 +114,7 @@ def _build_autocomplete_parser() -> argparse.ArgumentParser:
 	# all remaining registered tasks (no specific arg completion needed)
 	_handled = {
 		"build", "b", "run", "r", "launch", "service", "svc",
-		"camera", "alt-master", "proxy-pixhawk", "view-rtsp-stream", "install-mavproxy",
+		"camera", "alt-master", "alt-master-normalized", "proxy-pixhawk", "view-rtsp-stream", "install-mavproxy",
 		"help", "h",
 	}
 	for _name in sorted(TASKS.keys()):
@@ -203,6 +210,11 @@ def main():
 	# alt-master / alt_master  — optional port as positional arg
 	if cmd in ("alt-master", "alt_master"):
 		target_alt_master(rest[0] if rest else "/dev/Pixhawk")
+		return
+
+	# alt-master-normalized
+	if cmd in ("alt-master-normalized", "alt_master_normalized"):
+		target_alt_master_normalized(rest[0] if rest else "/dev/Pixhawk")
 		return
 
 	# alt-master-sitl
