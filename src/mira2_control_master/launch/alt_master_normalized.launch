@@ -1,7 +1,0 @@
-<launch>
-    <arg name="pixhawk_address" default="/dev/Pixhawk"/>
-
-    <node name="pymavlink_commands_normalized" pkg="mira2_control_master" exec="alt_master_normalized" output="screen">
-        <param name="pixhawk_address" value="$(var pixhawk_address)"/>
-    </node>
-</launch>
